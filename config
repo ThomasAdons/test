@@ -1,13 +1,12 @@
-sudo bash -c "cat << EOF > /etc/dnsmasq.conf
-# Disable DNS server
-port=0
-
-# Run as proxy DHCP server for PXE
-dhcp-range=<DHCP_SERVER_IP>,proxy,<DHCP_SERVER_SUBNET_MASK>
-
-# Because I am running dnsmasq as a proxy DHCP server, I need to use the pxe-prompt and pxe-service instead of dhcp-boot
-pxe-prompt=\"Hello, welcome to netboot with PXE\", 5
-pxe-service=x86PC, \"dnsmasq: Install Linux (x86PC)\", tftpboot/pxelinux
-pxe-service=x86PC, \"dnsmasq: Install Linux (x86-64_EFI)\", tftpboot/ldlinux.e64
-
+sudo bash -c "cat << EOF > /srv/tftp/tftpboot/pxelinux.cfg/default
+DEFAULT menu.c32
+PROMPT 0
+TIMEOUT 200
+ONTIMEOUT linux
+menu title UCLL Custom images
+LABEL linux
+  MENU LABEL Install ubuntu-24.04.1-lts-desktop-amd64
+  KERNEL vmlinuz
+  INITRD initrd
+  APPEND root=/dev/ram0 ramdisk_size=1500000 ip=dhcp url=http://192.168.1.10/ubuntu-24.04.1-desktop-amd64.iso
 EOF"
