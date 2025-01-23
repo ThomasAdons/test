@@ -1,28 +1,10 @@
-sudo bash -c "cat << EOF > /etc/nginx/nginx.conf
-user www-data;
-worker_processes auto;
-error_log /var/log/nginx/error.log warn;
-pid /run/nginx.pid;
+sudo bash -c "cat << EOF > /srv/tftp/tftpboot/pxelinux.cfg/default
+DEFAULT linux
+PROMPT 0
+timeout 20
 
-events {
-    worker_connections 768;
-}
-
-http {
-    include /etc/nginx/mime.types;
-    default_type application/octet-stream;
-    sendfile on;
-    gzip on;
-    access_log /var/log/nginx/access.log;
-    keepalive_timeout 3000;
-    server {
-        listen 80;
-        server_name localhost;
-        root /var/www;
-        autoindex on;
-
-        location = / {
-        }
-    }
-}
+LABEL linux
+  KERNEL vmlinuz
+  INITRD initrd
+  APPEND root=/dev/ram0 ramdisk_size=1500000 ip=dhcp url=http://<HTTP_SERVER_IP>/ubuntu-22.04.4-live-server-amd64.iso
 EOF"
